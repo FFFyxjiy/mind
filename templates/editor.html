@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор | Mind</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+</head>
+<body class="editor-layout-bg">
+
+    <div class="logo-pill">
+        <a href="/" style="text-decoration: none; color: inherit;">Mind</a>
+    </div>
+
+    <main class="app-container">
+        <div class="editor-layout">
+            <div class="document-container ui-card" id="live-doc">
+                <form id="profile-form" action="/editor" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="bio_html" id="bio_html">
+
+                    <div class="profile-header-inputs">
+                        <div class="photo-upload-box">
+                            <label for="photo-input" class="photo-label" id="photo-label">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Фото</span>
+                            </label>
+                            <input type="file" id="photo-input" name="photo" accept="image/*">
+                            <img id="live-avatar-preview" style="display:none;" title="Нажмите, чтобы изменить фото">
+                        </div>
+
+                        <div class="text-inputs">
+                            <input type="text" name="name" class="document-title-input" placeholder="Имя Фамилия" required>
+                            <input type="text" name="role" class="document-subtitle-input" placeholder="Должность или статус">
+                        </div>
+                    </div>
+
+                    <div class="settings-bar">
+                        <div class="setting-item">
+                            <label>Размер аватарки: <span id="img-size-val">140</span>px</label>
+                            <input type="range" name="image_size" min="50" max="300" value="140" oninput="updateLivePreview(this, 'img-size-val', '--dynamic-avatar-size', 'px')">
+                        </div>
+                        <div class="setting-item">
+                            <label>Скругление аватарки: <span id="img-rad-val">50</span>%</label>
+                            <input type="range" name="image_radius" min="0" max="50" value="50" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
+                        </div>
+                        <div class="setting-item">
+                            <label>Шрифт текста: <span id="font-size-val">18</span>px</label>
+                            <input type="range" name="font_size" min="12" max="28" value="18" oninput="updateLivePreview(this, 'font-size-val', '--dynamic-font', 'px')">
+                        </div>
+                        <div class="setting-item">
+                            <label>Цвет акцента:</label>
+                            <input type="color" name="accent_color" value="#2563eb" class="color-picker" oninput="document.getElementById('live-doc').style.setProperty('--dynamic-accent', this.value)">
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">Биография и медиа</h4>
+
+                    <div id="inline-image-settings" class="inline-image-settings" style="display: none;">
+                        <span class="settings-title"><i class="fa-solid fa-image"></i> Фото:</span>
+                        <div class="setting-item-mini">
+                            <label>Ширина: <span id="inline-w-val">100</span>%</label>
+                            <input type="range" id="inline-img-width" min="10" max="100" value="100">
+                        </div>
+                        <div class="setting-item-mini">
+                            <label>Радиус: <span id="inline-r-val">16</span>px</label>
+                            <input type="range" id="inline-img-radius" min="0" max="100" value="16">
+                        </div>
+
+                        <div class="setting-item-mini align-buttons">
+                            <button type="button" class="btn-align" onclick="alignInlineImage('left')" title="По левому краю"><i class="fa-solid fa-align-left"></i></button>
+                            <button type="button" class="btn-align" onclick="alignInlineImage('center')" title="По центру"><i class="fa-solid fa-align-center"></i></button>
+                            <button type="button" class="btn-align" onclick="alignInlineImage('right')" title="По правому краю"><i class="fa-solid fa-align-right"></i></button>
+                        </div>
+
+                        <button type="button" class="btn-delete-img" onclick="removeSelectedImage()" title="Удалить фото"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <div id="quill-container"></div>
+
+                    <div class="editor-footer">
+                        <button type="button" class="btn-blue" onclick="submitProfile()">Опубликовать</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if qr_code %}
+            <div class="result-sidebar">
+                <div class="ui-card text-center">
+                    <h3 class="success-text"><i class="fa-solid fa-check-circle"></i> Готово</h3>
+                    <img src="{{ qr_code }}" class="qr-image" alt="QR">
+                    <a href="{{ target_url }}" target="_blank" class="btn-blue w-100 mt-3" style="display:block; text-align:center;">Открыть страницу</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script>
+        // Аватарка
+        document.getElementById('photo-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById('live-avatar-preview');
+                    img.src = event.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('photo-label').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById('live-avatar-preview').addEventListener('click', function() {
+            document.getElementById('photo-input').click();
+        });
+
+        // CSS настройки профиля
+        function updateLivePreview(input, textId, cssVar, unit) {
+            document.getElementById(textId).innerText = input.value;
+            document.getElementById('live-doc').style.setProperty(cssVar, input.value + unit);
+        }
+
+        // --- НАСТРОЙКА ВЫРАВНИВАНИЯ ТЕКСТА ДЛЯ КОРРЕКТНОГО СОХРАНЕНИЯ ---
+        // Заставляем Quill использовать inline-styles (style="text-align: center") вместо классов
+        var AlignStyle = Quill.import('attributors/style/align');
+        Quill.register(AlignStyle, true);
+
+        // QUILL И ФОТО
+        function imageHandler() {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+            input.onchange = async () => {
+                var file = input.files[0];
+                var formData = new FormData();
+                formData.append('image', file);
+                var response = await fetch('/upload_image', { method: 'POST', body: formData });
+                var data = await response.json();
+                var range = quill.getSelection();
+                quill.insertEmbed(range.index, 'image', data.url);
+            };
+        }
+
+        var quill = new Quill('#quill-container', {
+            theme: 'snow',
+            placeholder: 'Напишите текст... Вставьте фото и кликните на него для настройки.',
+            modules: {
+                toolbar: {
+                    container: [
+                        [{ 'header': [2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'align': [] }], // Кнопки выравнивания текста
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ],
+                    handlers: { 'image': imageHandler }
+                }
+            }
+        });
+
+        // ЛОГИКА ДЛЯ НАСТРОЙКИ КАРТИНОК
+        let activeInlineImage = null;
+        const inlineImgPanel = document.getElementById('inline-image-settings');
+        const widthSlider = document.getElementById('inline-img-width');
+        const radiusSlider = document.getElementById('inline-img-radius');
+
+        document.querySelector('.ql-editor').addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG') {
+                activeInlineImage = e.target;
+                inlineImgPanel.style.display = 'flex';
+
+                document.querySelectorAll('.ql-editor img').forEach(img => img.style.outline = 'none');
+                activeInlineImage.style.outline = '3px solid var(--dynamic-accent)';
+
+                let currWidth = activeInlineImage.style.width ? parseInt(activeInlineImage.style.width) : 100;
+                let currRadius = activeInlineImage.style.borderRadius ? parseInt(activeInlineImage.style.borderRadius) : 16;
+
+                widthSlider.value = currWidth;
+                radiusSlider.value = currRadius;
+                document.getElementById('inline-w-val').innerText = currWidth;
+                document.getElementById('inline-r-val').innerText = currRadius;
+            } else {
+                inlineImgPanel.style.display = 'none';
+                if (activeInlineImage) activeInlineImage.style.outline = 'none';
+                activeInlineImage = null;
+            }
+        });
+
+        widthSlider.addEventListener('input', function() {
+            if (activeInlineImage) {
+                activeInlineImage.style.width = this.value + '%';
+                document.getElementById('inline-w-val').innerText = this.value;
+            }
+        });
+
+        radiusSlider.addEventListener('input', function() {
+            if (activeInlineImage) {
+                activeInlineImage.style.borderRadius = this.value + 'px';
+                document.getElementById('inline-r-val').innerText = this.value;
+            }
+        });
+
+        // НОВОЕ: Функция выравнивания картинки
+        function alignInlineImage(align) {
+            if (activeInlineImage && activeInlineImage.parentNode) {
+                activeInlineImage.parentNode.style.textAlign = align;
+            }
+        }
+
+        function removeSelectedImage() {
+            if (activeInlineImage) {
+                activeInlineImage.remove();
+                inlineImgPanel.style.display = 'none';
+                activeInlineImage = null;
+            }
+        }
+
+        function submitProfile() {
+            document.querySelectorAll('.ql-editor img').forEach(img => img.style.outline = 'none');
+            document.getElementById('bio_html').value = document.querySelector('.ql-editor').innerHTML;
+            document.getElementById('profile-form').submit();
+        }
+    </script>
+</body>
+</html>
