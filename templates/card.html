@@ -2,19 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ profile.name }} | Mind</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Применяем динамические настройки из Python */
         :root {
             --dynamic-accent: {{ profile.accent_color }};
             --dynamic-font: {{ profile.font_size }}px;
         }
 
-        .profile-container {
+        .profile-card {
             font-size: var(--dynamic-font);
         }
 
@@ -26,7 +25,6 @@
 
         .profile-role-badge {
             background-color: var(--dynamic-accent);
-            opacity: 0.9;
         }
 
         .profile-content a {
@@ -39,26 +37,34 @@
     </style>
 </head>
 <body class="profile-mode-body">
-    <div class="profile-container">
 
-        <div class="profile-hero">
-            {% if profile.photo %}
-                <img src="data:image/png;base64,{{ profile.photo }}" class="profile-avatar dynamic-avatar" alt="{{ profile.name }}">
-            {% else %}
-                <div class="profile-avatar placeholder dynamic-avatar"></div>
-            {% endif %}
+    <div class="profile-mobile-wrapper">
+        <article class="profile-card">
 
-            <h1 class="profile-name">{{ profile.name }}</h1>
+            <div class="profile-hero">
+                {% if profile.photo %}
+                    <img src="data:image/png;base64,{{ profile.photo }}" class="profile-avatar dynamic-avatar" alt="{{ profile.name }}">
+                {% else %}
+                    <div class="profile-avatar placeholder dynamic-avatar"></div>
+                {% endif %}
 
-            {% if profile.role %}
-                <div class="profile-role-badge">{{ profile.role }}</div>
-            {% endif %}
-        </div>
+                <h1 class="profile-name">{{ profile.name }}</h1>
 
-        <div class="profile-content">
-            {{ profile.bio | safe }}
-        </div>
+                {% if profile.role %}
+                    <div class="profile-role-badge">{{ profile.role }}</div>
+                {% endif %}
+            </div>
 
+            <div class="profile-content">
+                {{ profile.bio | safe }}
+            </div>
+
+            <footer class="profile-mini-footer">
+                <span>Mind Digital Bio</span>
+            </footer>
+
+        </article>
     </div>
+
 </body>
 </html>

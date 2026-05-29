@@ -46,10 +46,10 @@ async def generate_profile(
     name: str = Form(""),
     role: str = Form(""),
     bio_html: str = Form(""),
-    image_size: int = Form(140),         # Размер в пикселях
-    image_radius: int = Form(50),        # Скругление в %
-    font_size: int = Form(18),           # Размер шрифта в px
-    accent_color: str = Form("#2563eb"), # Цвет акцента HEX
+    image_size: int = Form(140),
+    image_radius: int = Form(50),
+    font_size: int = Form(18),
+    accent_color: str = Form("#2563eb"),
     photo: UploadFile = File(None)
 ):
     photo_b64 = ""
@@ -70,6 +70,7 @@ async def generate_profile(
         "accent_color": accent_color
     }
 
+    # Важно: поддомен card.labretto.ru автоматически подставится из request.base_url
     target_url = f"{str(request.base_url).rstrip('/')}/view/{short_id}"
     qr = segno.make(target_url)
     buffer = io.BytesIO()
@@ -95,4 +96,5 @@ async def view_profile(request: Request, short_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # ИСПРАВЛЕНО: перешли на порт 8020 для работы за Caddy без конфликтов
+    uvicorn.run("main:app", host="127.0.0.1", port=8020, reload=True)
