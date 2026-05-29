@@ -13,7 +13,7 @@ from itsdangerous import URLSafeSerializer
 import segno
 
 # --- НАСТРОЙКИ ЭКОСИСТЕМЫ LABID ---
-SECRET_KEY = os.getenv("SECRET_KEY", "labretto_super_secret_change_later")
+SECRET_KEY = "super_secret_labid_key_12345"
 DOMAIN = os.getenv("DOMAIN", "labretto.ru")
 
 # Путь до базы данных твоего LabID (labretto-register)
