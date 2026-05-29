@@ -38,7 +38,9 @@ def get_labid_user(request: Request):
 
         if user:
             user_dict = dict(user)
-            full_name = user_dict.get('nickname') or f"{user_dict.get('first_name', '')} {user_dict.get('last_name', '')}".strip() or user_dict.get('username')
+            full_name = user_dict.get(
+                'nickname') or f"{user_dict.get('first_name', '')} {user_dict.get('last_name', '')}".strip() or user_dict.get(
+                'username')
             user_dict['display_name'] = full_name
             avatar_path = user_dict.get('avatar')
             user_dict['avatar_url'] = f"https://id.{DOMAIN}{avatar_path}" if avatar_path else ""
@@ -64,9 +66,9 @@ class DBProfile(Base):
     bio = Column(Text, default="")
     photo = Column(Text, default="")
     image_size = Column(Integer, default=140)
-    image_radius = Column(Integer, default=8) # Убрали сильное скругление по дефолту
+    image_radius = Column(Integer, default=4)  # Строгое скругление
     font_size = Column(Integer, default=18)
-    accent_color = Column(String, default="#D7135E") # Новый фирменный розово-красный
+    accent_color = Column(String, default="#103D20")
 
 
 class DBImage(Base):
@@ -88,7 +90,7 @@ def get_db():
 
 
 # --- ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ---
-app = FastAPI(title="Labretto Card") # Изменили название
+app = FastAPI(title="LabCard")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -118,7 +120,24 @@ async def editor_page(request: Request):
     user = get_labid_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request=request, name="editor.html", context={"request": request, "qr_code": None})
+    return templates.TemplateResponse(request=request, name="editor.html",
+                                      context={"request": request, "qr_code": None})
+
+
+# --- УДАЛЕНИЕ ВИЗИТКИ ---
+@app.post("/delete/{short_id}")
+async def delete_profile(request: Request, short_id: str, db: Session = Depends(get_db)):
+    user = get_labid_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+
+    # Проверяем, что визитка принадлежит именно этому пользователю
+    profile = db.query(DBProfile).filter(DBProfile.short_id == short_id, DBProfile.owner_id == str(user["id"])).first()
+    if profile:
+        db.delete(profile)
+        db.commit()
+
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.post("/upload_image")
@@ -148,9 +167,9 @@ async def generate_profile(
         role: str = Form(""),
         bio_html: str = Form(""),
         image_size: int = Form(140),
-        image_radius: int = Form(8),
+        image_radius: int = Form(4),
         font_size: int = Form(18),
-        accent_color: str = Form("#D7135E"),
+        accent_color: str = Form("#103D20"),
         photo: UploadFile = File(None),
         db: Session = Depends(get_db)
 ):
@@ -202,9 +221,11 @@ async def view_profile(request: Request, short_id: str, db: Session = Depends(ge
         return HTMLResponse(
             "<h1 style='text-align:center; margin-top:50px; font-family:sans-serif;'>Профиль не найден</h1>",
             status_code=404)
-    return templates.TemplateResponse(request=request, name="card.html", context={"request": request, "profile": profile})
+    return templates.TemplateResponse(request=request, name="card.html",
+                                      context={"request": request, "profile": profile})
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", host="127.0.0.1", port=8020, reload=True)
