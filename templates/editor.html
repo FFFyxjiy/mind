@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактор | Mind</title>
+    <title>Редактор | Labretto Card</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,7 +13,7 @@
 <body class="editor-layout-bg">
 
     <div class="logo-pill">
-        <a href="/" style="text-decoration: none; color: inherit;">Mind</a>
+        <a href="/" style="text-decoration: none; color: inherit;">Labretto Card</a>
     </div>
 
     <main class="app-container">
@@ -40,12 +40,12 @@
 
                     <div class="settings-bar">
                         <div class="setting-item">
-                            <label>Размер аватарки: <span id="img-size-val">140</span>px</label>
+                            <label>Размер фото: <span id="img-size-val">140</span>px</label>
                             <input type="range" name="image_size" min="50" max="300" value="140" oninput="updateLivePreview(this, 'img-size-val', '--dynamic-avatar-size', 'px')">
                         </div>
                         <div class="setting-item">
-                            <label>Скругление: <span id="img-rad-val">50</span>%</label>
-                            <input type="range" name="image_radius" min="0" max="50" value="50" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
+                            <label>Скругление: <span id="img-rad-val">8</span>%</label>
+                            <input type="range" name="image_radius" min="0" max="50" value="8" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
                         </div>
                         <div class="setting-item">
                             <label>Шрифт текста: <span id="font-size-val">18</span>px</label>
@@ -53,7 +53,7 @@
                         </div>
                         <div class="setting-item">
                             <label>Цвет акцента:</label>
-                            <input type="color" name="accent_color" value="#2563eb" class="color-picker" oninput="document.getElementById('live-doc').style.setProperty('--dynamic-accent', this.value)">
+                            <input type="color" name="accent_color" value="#D7135E" class="color-picker" oninput="document.getElementById('live-doc').style.setProperty('--dynamic-accent', this.value)">
                         </div>
                     </div>
 
@@ -66,8 +66,8 @@
                             <input type="range" id="inline-img-width" min="10" max="100" value="100">
                         </div>
                         <div class="setting-item-mini">
-                            <label>Радиус: <span id="inline-r-val">16</span>px</label>
-                            <input type="range" id="inline-img-radius" min="0" max="100" value="16">
+                            <label>Радиус: <span id="inline-r-val">4</span>px</label>
+                            <input type="range" id="inline-img-radius" min="0" max="100" value="4">
                         </div>
 
                         <div class="setting-item-mini align-buttons">
@@ -82,7 +82,7 @@
                     <div id="quill-container"></div>
 
                     <div class="editor-footer">
-                        <button type="button" class="btn-blue" onclick="submitProfile()">Опубликовать</button>
+                        <button type="button" class="btn-primary" onclick="submitProfile()">Опубликовать</button>
                     </div>
                 </form>
             </div>
@@ -90,9 +90,9 @@
             {% if qr_code %}
             <div class="result-sidebar">
                 <div class="ui-card text-center">
-                    <h3 class="success-text"><i class="fa-solid fa-check-circle"></i> Готово</h3>
+                    <h3 class="success-text" style="color: var(--primary);"><i class="fa-solid fa-check-circle"></i> Готово</h3>
                     <img src="{{ qr_code }}" class="qr-image" alt="QR">
-                    <a href="{{ target_url }}" target="_blank" class="btn-blue w-100 mt-3" style="display:block; text-align:center;">Открыть страницу</a>
+                    <a href="{{ target_url }}" target="_blank" class="btn-primary w-100 mt-3" style="display:block; text-align:center;">Открыть страницу</a>
                 </div>
             </div>
             {% endif %}
@@ -174,7 +174,7 @@
                 activeInlineImage.style.outline = '3px solid var(--dynamic-accent)';
 
                 let currWidth = activeInlineImage.style.width ? parseInt(activeInlineImage.style.width) : 100;
-                let currRadius = activeInlineImage.style.borderRadius ? parseInt(activeInlineImage.style.borderRadius) : 16;
+                let currRadius = activeInlineImage.style.borderRadius ? parseInt(activeInlineImage.style.borderRadius) : 4;
 
                 widthSlider.value = currWidth;
                 radiusSlider.value = currRadius;

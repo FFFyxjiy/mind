@@ -16,14 +16,11 @@ import segno
 SECRET_KEY = "super_secret_labid_key_12345"
 DOMAIN = os.getenv("DOMAIN", "labretto.ru")
 
-# Путь до базы данных твоего LabID (labretto-register)
 LABID_DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "labretto-register", "users.db"))
-
 serializer = URLSafeSerializer(SECRET_KEY, salt="labid-session")
 
 
 def get_labid_user(request: Request):
-    """Читает куку LabID и достает данные пользователя из соседней базы"""
     session_cookie = request.cookies.get("labid_session")
     if not session_cookie:
         return None
@@ -41,10 +38,8 @@ def get_labid_user(request: Request):
 
         if user:
             user_dict = dict(user)
-            # Формируем имя: Никнейм -> Имя Фамилия -> Логин
             full_name = user_dict.get('nickname') or f"{user_dict.get('first_name', '')} {user_dict.get('last_name', '')}".strip() or user_dict.get('username')
             user_dict['display_name'] = full_name
-            # Формируем ссылку на аватарку
             avatar_path = user_dict.get('avatar')
             user_dict['avatar_url'] = f"https://id.{DOMAIN}{avatar_path}" if avatar_path else ""
             return user_dict
@@ -63,15 +58,15 @@ Base = declarative_base()
 class DBProfile(Base):
     __tablename__ = "profiles"
     short_id = Column(String, primary_key=True, index=True)
-    owner_id = Column(String, index=True)  # ID пользователя из LabID
+    owner_id = Column(String, index=True)
     name = Column(String, default="")
     role = Column(String, default="")
     bio = Column(Text, default="")
     photo = Column(Text, default="")
     image_size = Column(Integer, default=140)
-    image_radius = Column(Integer, default=50)
+    image_radius = Column(Integer, default=8) # Убрали сильное скругление по дефолту
     font_size = Column(Integer, default=18)
-    accent_color = Column(String, default="#2563eb")
+    accent_color = Column(String, default="#D7135E") # Новый фирменный розово-красный
 
 
 class DBImage(Base):
@@ -93,7 +88,7 @@ def get_db():
 
 
 # --- ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ---
-app = FastAPI(title="Card Labretto")
+app = FastAPI(title="Labretto Card") # Изменили название
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -103,12 +98,9 @@ templates = Jinja2Templates(directory="templates")
 async def dashboard_page(request: Request, db: Session = Depends(get_db)):
     user = get_labid_user(request)
     if not user:
-        # Если не вошел — отправляем на авторизацию
         return RedirectResponse(url="/login")
 
-    # Ищем визитки, принадлежащие этому пользователю
     profiles = db.query(DBProfile).filter(DBProfile.owner_id == str(user["id"])).all()
-
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -118,7 +110,6 @@ async def dashboard_page(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/login")
 async def login_redirect(request: Request):
-    # Перекидываем на LabID с возвратом обратно
     return RedirectResponse(url=f"https://id.{DOMAIN}/login?next=https://card.{DOMAIN}/")
 
 
@@ -157,9 +148,9 @@ async def generate_profile(
         role: str = Form(""),
         bio_html: str = Form(""),
         image_size: int = Form(140),
-        image_radius: int = Form(50),
+        image_radius: int = Form(8),
         font_size: int = Form(18),
-        accent_color: str = Form("#2563eb"),
+        accent_color: str = Form("#D7135E"),
         photo: UploadFile = File(None),
         db: Session = Depends(get_db)
 ):
