@@ -6,15 +6,13 @@
     <title>Мои визитки | LabCard</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Иконки FontAwesome (для выхода и др.) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-bg">
 
-    <!-- Верхняя панель (строго как на скрине) -->
     <nav class="eco-nav">
         <div class="eco-nav-left">
-            <div class="eco-pill brand-pill">Card</div>
+            <div class="eco-pill brand-pill-black">Card</div>
             <div class="eco-pill">Визитки и биография</div>
         </div>
 
@@ -43,12 +41,11 @@
         </div>
     </nav>
 
-    <!-- Сетка карточек -->
     <main class="eco-container">
         <div class="projects-grid">
 
             {% for profile in profiles %}
-            <div class="project-card">
+            <div class="project-card animate-card">
                 <a href="/view/{{ profile.short_id }}" class="project-card-link" target="_blank">
                     {% if profile.photo %}
                         <img src="data:image/png;base64,{{ profile.photo }}" class="project-thumb">
@@ -62,8 +59,7 @@
                     </div>
                 </a>
 
-                <!-- Кнопка удаления (с иконкой trach.svg) -->
-                <form action="/delete/{{ profile.short_id }}" method="POST" class="delete-form" onsubmit="return confirm('Точно удалить эту визитку? Действие необратимо.');">
+                <form action="/delete/{{ profile.short_id }}" method="POST" class="delete-form" onsubmit="return confirm('Точно удалить эту визитку?');">
                     <button type="submit" class="btn-delete-card" title="Удалить визитку">
                         <img src="{{ url_for('static', path='trach.svg') }}" alt="Удалить">
                     </button>
