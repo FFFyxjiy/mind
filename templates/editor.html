@@ -44,7 +44,7 @@
                             <input type="range" name="image_size" min="50" max="300" value="140" oninput="updateLivePreview(this, 'img-size-val', '--dynamic-avatar-size', 'px')">
                         </div>
                         <div class="setting-item">
-                            <label>Скругление аватарки: <span id="img-rad-val">50</span>%</label>
+                            <label>Скругление: <span id="img-rad-val">50</span>%</label>
                             <input type="range" name="image_radius" min="0" max="50" value="50" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
                         </div>
                         <div class="setting-item">
@@ -100,7 +100,6 @@
     </main>
 
     <script>
-        // Аватарка
         document.getElementById('photo-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -118,18 +117,14 @@
             document.getElementById('photo-input').click();
         });
 
-        // CSS настройки профиля
         function updateLivePreview(input, textId, cssVar, unit) {
             document.getElementById(textId).innerText = input.value;
             document.getElementById('live-doc').style.setProperty(cssVar, input.value + unit);
         }
 
-        // --- НАСТРОЙКА ВЫРАВНИВАНИЯ ТЕКСТА ДЛЯ КОРРЕКТНОГО СОХРАНЕНИЯ ---
-        // Заставляем Quill использовать inline-styles (style="text-align: center") вместо классов
         var AlignStyle = Quill.import('attributors/style/align');
         Quill.register(AlignStyle, true);
 
-        // QUILL И ФОТО
         function imageHandler() {
             var input = document.createElement('input');
             input.setAttribute('type', 'file');
@@ -155,7 +150,7 @@
                         [{ 'header': [2, 3, false] }],
                         ['bold', 'italic', 'underline', 'strike'],
                         [{ 'color': [] }, { 'background': [] }],
-                        [{ 'align': [] }], // Кнопки выравнивания текста
+                        [{ 'align': [] }],
                         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                         ['link', 'image'],
                         ['clean']
@@ -165,7 +160,6 @@
             }
         });
 
-        // ЛОГИКА ДЛЯ НАСТРОЙКИ КАРТИНОК
         let activeInlineImage = null;
         const inlineImgPanel = document.getElementById('inline-image-settings');
         const widthSlider = document.getElementById('inline-img-width');
@@ -207,7 +201,6 @@
             }
         });
 
-        // НОВОЕ: Функция выравнивания картинки
         function alignInlineImage(align) {
             if (activeInlineImage && activeInlineImage.parentNode) {
                 activeInlineImage.parentNode.style.textAlign = align;

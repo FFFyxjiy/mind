@@ -28,13 +28,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; }
     color: #111827; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); z-index: 100;
 }
 
-/* Главная страница */
-.home-layout { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-.hero-wrapper { width: 100%; max-width: 800px; padding: 20px; }
-.hero-card { background: var(--surface-color); border-radius: 24px; padding: 70px 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
-.hero-card h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.1; color: #1f2937; margin-bottom: 24px; }
-.hero-card p { font-size: 1.1rem; color: #9ca3af; font-weight: 500; margin-bottom: 40px; line-height: 1.5; }
-
+/* Кнопка */
 .btn-blue {
     display: inline-block; background: var(--primary); color: white;
     padding: 16px 40px; border-radius: 12px; font-family: 'Montserrat', sans-serif;
@@ -223,4 +217,47 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; }
     .hero-card h1 { font-size: 2.2rem; }
     .logo-pill { top: 20px; left: 20px; padding: 6px 18px; font-size: 1rem; }
     .profile-header-inputs { flex-direction: column; align-items: center; text-align: center; }
+}
+
+
+/* --- ЭКОСИСТЕМА LABRETTO (DASHBOARD) --- */
+.dashboard-bg { background-color: #f4f5f7; min-height: 100vh; }
+.eco-nav { display: flex; justify-content: space-between; align-items: center; padding: 24px 40px; gap: 20px; }
+.eco-nav-left, .eco-nav-center, .eco-nav-right { display: flex; gap: 16px; align-items: center; }
+.eco-nav-center { flex-grow: 1; justify-content: center; }
+
+.eco-pill { background: #ffffff; border-radius: 30px; padding: 12px 24px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 12px; }
+.brand-pill { font-size: 1.1rem; }
+
+.eco-search { background: #ffffff; border: none; border-radius: 30px; padding: 12px 24px; width: 400px; max-width: 100%; font-family: 'Inter', sans-serif; font-size: 1rem; color: #374151; outline: none; }
+.eco-search::placeholder { color: #9ca3af; }
+
+.eco-avatar { width: 32px; height: 32px; background: #374151; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.eco-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-pill { cursor: pointer; transition: background 0.2s; }
+.profile-pill:hover { background: #f9fafb; }
+
+.btn-eco-create { background: var(--text-main); color: white; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5rem; font-weight: bold; transition: transform 0.2s; }
+.btn-eco-create:hover { transform: scale(1.05); }
+
+.btn-logout { background: transparent; color: #ef4444; text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 10px 16px; border-radius: 20px; transition: 0.2s; }
+.btn-logout:hover { background: #fee2e2; }
+
+.eco-container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-top: 20px; }
+.project-card-link { text-decoration: none; color: inherit; }
+
+.project-card { background: #ffffff; border-radius: 20px; padding: 24px; display: flex; gap: 20px; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+.project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
+.project-thumb { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; flex-shrink: 0; }
+.project-thumb.placeholder { background: #374151; }
+
+.project-info h3 { font-size: 1.25rem; margin-bottom: 6px; color: #111827; }
+.project-info p { color: #6b7280; font-size: 0.95rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+@media (max-width: 992px) {
+    .eco-nav { flex-direction: column; padding: 20px; }
+    .eco-nav-center { width: 100%; }
+    .eco-search { width: 100%; }
+    .eco-container { padding: 0 20px; }
 }
