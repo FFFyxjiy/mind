@@ -13,7 +13,7 @@
 <body class="editor-layout-bg">
 
     <div class="logo-pill">
-        <a href="/" style="text-decoration: none; color: inherit;">LabCard</a>
+        <a href="/" style="text-decoration: none; color: inherit;">Card</a>
     </div>
 
     <main class="app-container">
@@ -44,8 +44,8 @@
                             <input type="range" name="image_size" min="50" max="300" value="140" oninput="updateLivePreview(this, 'img-size-val', '--dynamic-avatar-size', 'px')">
                         </div>
                         <div class="setting-item">
-                            <label>Скругление: <span id="img-rad-val">4</span>%</label>
-                            <input type="range" name="image_radius" min="0" max="50" value="4" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
+                            <label>Скругление: <span id="img-rad-val">16</span>%</label>
+                            <input type="range" name="image_radius" min="0" max="50" value="16" oninput="updateLivePreview(this, 'img-rad-val', '--dynamic-avatar-radius', '%')">
                         </div>
                         <div class="setting-item">
                             <label>Шрифт текста: <span id="font-size-val">18</span>px</label>
@@ -53,27 +53,27 @@
                         </div>
                         <div class="setting-item">
                             <label>Цвет акцента:</label>
-                            <input type="color" name="accent_color" value="#103D20" class="color-picker" oninput="document.getElementById('live-doc').style.setProperty('--dynamic-accent', this.value)">
+                            <input type="color" name="accent_color" value="#111827" class="color-picker" oninput="document.getElementById('live-doc').style.setProperty('--dynamic-accent', this.value)">
                         </div>
                     </div>
 
                     <h4 class="section-title">Биография и медиа</h4>
                     <br>
 
-                    <div id="inline-image-settings" class="inline-image-settings" style="display: none; background: #f9f9f9; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); margin-bottom: 10px;">
-                        <span class="settings-title"><i class="fa-solid fa-image"></i> Фото:</span>
-                        <div class="setting-item-mini" style="display:inline-block; margin-left: 10px;">
+                    <div id="inline-image-settings" style="display: none; background: #f9f9f9; padding: 10px; border-radius: var(--radius); margin-bottom: 10px;">
+                        <span style="font-weight: 600;"><i class="fa-solid fa-image"></i> Фото:</span>
+                        <div style="display:inline-block; margin-left: 10px;">
                             <label>Ширина: <span id="inline-w-val">100</span>%</label>
                             <input type="range" id="inline-img-width" min="10" max="100" value="100" style="vertical-align: middle;">
                         </div>
 
-                        <div class="align-buttons" style="display:inline-block; margin-left: 20px;">
-                            <button type="button" class="btn-align" onclick="alignInlineImage('left')" title="По левому краю" style="padding: 4px 8px;"><i class="fa-solid fa-align-left"></i></button>
-                            <button type="button" class="btn-align" onclick="alignInlineImage('center')" title="По центру" style="padding: 4px 8px;"><i class="fa-solid fa-align-center"></i></button>
-                            <button type="button" class="btn-align" onclick="alignInlineImage('right')" title="По правому краю" style="padding: 4px 8px;"><i class="fa-solid fa-align-right"></i></button>
+                        <div style="display:inline-block; margin-left: 20px;">
+                            <button type="button" onclick="alignInlineImage('left')" title="По левому краю" style="padding: 4px 8px; border:none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-align-left"></i></button>
+                            <button type="button" onclick="alignInlineImage('center')" title="По центру" style="padding: 4px 8px; border:none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-align-center"></i></button>
+                            <button type="button" onclick="alignInlineImage('right')" title="По правому краю" style="padding: 4px 8px; border:none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-align-right"></i></button>
                         </div>
 
-                        <button type="button" class="btn-delete-img" onclick="removeSelectedImage()" title="Удалить фото" style="margin-left: 20px; color: red; background: none; border: none; cursor: pointer;"><i class="fa-solid fa-trash"></i> Удалить</button>
+                        <button type="button" onclick="removeSelectedImage()" title="Удалить фото" style="margin-left: 20px; color: red; background: none; border: none; cursor: pointer;"><i class="fa-solid fa-trash"></i> Удалить</button>
                     </div>
 
                     <div id="quill-container"></div>
@@ -85,9 +85,9 @@
             </div>
 
             {% if qr_code %}
-            <div class="result-sidebar">
+            <div class="result-sidebar animate-card">
                 <div class="ui-card text-center">
-                    <h3 class="success-text" style="color: var(--primary-green); margin-bottom: 20px;"><i class="fa-solid fa-check-circle"></i> Готово</h3>
+                    <h3 class="success-text" style="color: var(--text-main); margin-bottom: 20px;"><i class="fa-solid fa-check-circle"></i> Готово</h3>
                     <img src="{{ qr_code }}" class="qr-image" alt="QR">
                     <a href="{{ target_url }}" target="_blank" class="btn-primary w-100 mt-3" style="display:block; text-align:center; margin-top: 10px;">Открыть страницу</a>
                 </div>
@@ -173,7 +173,6 @@
                 widthSlider.value = currWidth;
                 document.getElementById('inline-w-val').innerText = currWidth;
 
-                // Применяем скругление ко всем картинкам в редакторе по умолчанию
                 activeInlineImage.style.borderRadius = "var(--radius)";
             } else {
                 inlineImgPanel.style.display = 'none';
