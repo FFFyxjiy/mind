@@ -16,18 +16,22 @@ import segno
 SECRET_KEY = "super_secret_labid_key_12345"
 DOMAIN = os.getenv("DOMAIN", "labretto.ru")
 
-LABID_DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "labretto-register", "users.db"))
+LABID_DB_PATH = "/home/labretto/labretto-register/users.db"
 serializer = URLSafeSerializer(SECRET_KEY, salt="labid-session")
 
 
 def get_labid_user(request: Request):
     session_cookie = request.cookies.get("labid_session")
     if not session_cookie:
+        print("❌ DEBUG: Нет куки labid_session в браузере.")
         return None
+
     try:
         data = serializer.loads(session_cookie)
         user_id = data.get("user_id")
-    except Exception:
+        print(f"✅ DEBUG: Кука успешно расшифрована! user_id = {user_id}")
+    except Exception as e:
+        print(f"❌ DEBUG: Ошибка расшифровки куки (ключи не совпадают): {e}")
         return None
 
     try:
@@ -44,10 +48,15 @@ def get_labid_user(request: Request):
             user_dict['display_name'] = full_name
             avatar_path = user_dict.get('avatar')
             user_dict['avatar_url'] = f"https://id.{DOMAIN}{avatar_path}" if avatar_path else ""
+            print(f"✅ DEBUG: Пользователь найден в БД. Вход разрешен.")
             return user_dict
+        else:
+            print(f"❌ DEBUG: Пользователь с id {user_id} не найден в БД LabID!")
+            return None
     except Exception as e:
-        print(f"Ошибка подключения к БД LabID: {e}")
-    return None
+        print(f"❌ DEBUG: Ошибка доступа к базе данных LabID: {e}")
+        print(f"❌ Путь к базе: {LABID_DB_PATH}")
+        return No
 
 
 # --- БАЗА ДАННЫХ ВИЗИТОК ---
